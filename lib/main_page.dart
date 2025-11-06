@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:learn_doomsday/quiz_page.dart';
 
 class BigButton extends StatelessWidget {
-  BigButton({super.key, required this.label, this.onPressed});
+  const BigButton({super.key, required this.label, this.onPressed});
 
   final String label;
   final void Function()? onPressed;
