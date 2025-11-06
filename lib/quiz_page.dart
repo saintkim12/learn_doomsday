@@ -60,12 +60,58 @@ class _QuizPageState extends State<QuizPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
-                  onPressed: () {},
+                TextButton(
+                  onPressed: () => showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('힌트'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('둠스데이 규칙은 특정 연도의 기준 요일을 이용해,'),
+                          Text('어떤 날짜의 요일이든 쉽게 구하는 방법입니다.'),
+                          Text('1. 연도의 둠스데이 요일을 구하고,'),
+                          Text('2. 월별로 정해진 기준일을 찾은 뒤,'),
+                          Text('3. 기준일과 목표 날짜의 차이에 따라 요일을 이동하면 됩니다.'),
+                          // 입력 연도	year	int	예: 2025
+                          // 입력 월	month	int	예: 6
+                          // 입력 일자	date	int	예: 9
+                          // 연도의 둠스데이 요일	doomsdayOfYear	int (0~6) 또는 enum	0=일요일, …, 6=토요일
+                          // 월별 기준일(둠스데이트)	doomsdateOfMonth	int	예: 6 (6월 6일의 6)
+                          // 기준일의 요일	doomsdayOfMonth	동일	doomsdayOfYear와 동일
+                          // 날짜 차이	offsetDays	int	date - doomsdateOfMonth
+                          // 최종 요일	resultWeekday	int	(doomsdayOfYear + offsetDays) % 7
+                          Text(''),
+                          Text('\$year년의 \$doomsdayOfYear은?'),
+                          Text('\$month월의 \$doomsdateOfMonth은?'),
+                          Text('\$month월의 \$doomsdateOfMonth일과 \$date일의 차이는?'),
+                          Text('그렇다면 \$resultWeekday은?'),
+                        ],
+                      ),
+                      actions: <Widget>[
+                        // TextButton(
+                        //   onPressed: () => Navigator.pop(context, 'Cancel'),
+                        //   child: const Text('Cancel'),
+                        // ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  ),
                   child: Text('힌트 보기'), // 치트시트 팝업
                 ),
-                ElevatedButton(
-                  onPressed: () {},
+                TextButton(
+                  onPressed: () {
+                    // Navigator.of(context).push(
+                    //   MaterialPageRoute(
+                    //     builder: (context) => MainPage(title: 'hi'),
+                    //     fullscreenDialog: true
+                    //   ),
+                    // );
+                  },
                   child: Text('다시 학습하기'), // 페이지 이동
                 ),
               ],
