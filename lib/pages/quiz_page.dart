@@ -222,9 +222,21 @@ class _QuizPageState extends State<QuizPage> {
     final month = date.month;
     final day = date.day;
 
-    // 둠스데이 알고리즘 계산 과정 (4단계)
+    // 둠스데이 알고리즘 계산 과정
 
-    // 1단계: 해당 연도의 둠스데이 요일 계산
+    // 1단계: 해당 연도의 둠스데이 요일 계산 (상세)
+    final century = year ~/ 100;
+    final yearInCentury = year % 100;
+
+    // 세기별 anchor day 계산
+    final anchorDay = (5 * (century % 4) + 2) % 7;
+    final anchorDayStr = _calculator.getWeekdayString(anchorDay);
+
+    // 세기 내 offset 계산
+    final a = yearInCentury ~/ 12;
+    final b = yearInCentury % 12;
+    final c = b ~/ 4;
+
     final doomsdayOfYear = _calculator.calculateDoomsdayOfYear(year);
     final doomsdayOfYearStr = _calculator.getWeekdayString(doomsdayOfYear);
 
@@ -246,23 +258,83 @@ class _QuizPageState extends State<QuizPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('문제: ${date.toKoreanString()}은 무슨 요일?'),
-              const Divider(),
-              const Text('1단계: 연도의 둠스데이 구하기'),
-              Text('→ $year년의 둠스데이는 $doomsdayOfYearStr요일'),
-              const SizedBox(height: 8),
-              const Text('2단계: 월별 둠스데이 날짜 찾기'),
-              Text('→ $month월의 둠스데이는 $month월 $doomsdateOfMonth일'),
-              const SizedBox(height: 8),
-              const Text('3단계: 날짜 차이 계산'),
-              Text('→ $month월 $day일 - $month월 $doomsdateOfMonth일 = $offset일'),
-              const SizedBox(height: 8),
-              const Text('4단계: 요일 계산'),
-              Text('→ $doomsdayOfYearStr요일 + $offset일 = $correctWeekday요일'),
-              const Divider(),
               Text(
-                '답: $correctWeekday요일',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                '문제: ${date.toKoreanString()}은 무슨 요일?',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const Divider(),
+
+              // 1단계: 연도의 둠스데이 구하기 (상세 설명)
+              const Text(
+                '1단계: 연도의 둠스데이 구하기',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+              ),
+              const SizedBox(height: 4),
+              Text('① 세기 구하기: $year년 = ${century}00년대'),
+              Text('② ${century}00년대의 기준 요일: $anchorDayStr요일'),
+              Text('③ ${century}00년대에서 $year년까지:'),
+              Text('   • $yearInCentury년 ÷ 12 = $a ... $b'),
+              Text('   • $b년 ÷ 4 = $c (윤년 보정)'),
+              Text('   • 더하기: $a + $b + $c = ${a + b + c}'),
+              Text('④ $anchorDayStr요일 + ${a + b + c}일 = $doomsdayOfYearStr요일'),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '∴ $year년의 둠스데이는 $doomsdayOfYearStr요일',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // 2단계: 월별 둠스데이 날짜
+              const Text(
+                '2단계: 월별 둠스데이 날짜 찾기',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+              ),
+              const SizedBox(height: 4),
+              Text('$month월의 둠스데이 날짜: $month월 $doomsdateOfMonth일'),
+              Text('($month월 $doomsdateOfMonth일은 $doomsdayOfYearStr요일입니다)'),
+              const SizedBox(height: 8),
+
+              // 3단계: 날짜 차이
+              const Text(
+                '3단계: 날짜 차이 계산',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+              const SizedBox(height: 4),
+              Text('목표: $month월 $day일'),
+              Text('기준: $month월 $doomsdateOfMonth일 ($doomsdayOfYearStr요일)'),
+              Text('차이: $day - $doomsdateOfMonth = $offset일'),
+              const SizedBox(height: 8),
+
+              // 4단계: 최종 계산
+              const Text(
+                '4단계: 최종 요일 계산',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple),
+              ),
+              const SizedBox(height: 4),
+              Text('$doomsdayOfYearStr요일 + $offset일 = $correctWeekday요일'),
+
+              const Divider(),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '답: ${date.toKoreanString()}은 $correctWeekday요일',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.green,
+                  ),
+                ),
               ),
             ],
           ),
@@ -282,28 +354,112 @@ class _QuizPageState extends State<QuizPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('둠스데이 알고리즘 힌트'),
+        title: const Text('💡 둠스데이 알고리즘 힌트'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text('둠스데이 규칙은 특정 연도의 기준 요일을 이용해,'),
-              Text('어떤 날짜의 요일이든 쉽게 구하는 방법입니다.'),
-              SizedBox(height: 8),
-              Text('단계:', style: TextStyle(fontWeight: FontWeight.bold)),
-              Text('1. 연도의 둠스데이 요일을 구하고,'),
-              Text('2. 월별로 정해진 기준일을 찾은 뒤,'),
-              Text('3. 기준일과 목표 날짜의 차이에 따라 요일을 이동합니다.'),
-              SizedBox(height: 8),
-              Text('월별 둠스데이:', style: TextStyle(fontWeight: FontWeight.bold)),
-              Text('1월: 3일(평년) / 4일(윤년)'),
-              Text('2월: 28일(평년) / 29일(윤년)'),
-              Text('3월: 7일'),
-              Text('4월: 4일, 6월: 6일, 8월: 8일'),
-              Text('10월: 10일, 12월: 12일'),
-              Text('5월: 9일, 9월: 5일'),
-              Text('7월: 11일, 11월: 7일'),
+            children: [
+              // 핵심 원리
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  '핵심: 매년 특정 날짜들은 모두 같은 요일!',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // 예시로 이해하기
+              const Text(
+                '예: 2025년의 경우',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+              const Text('4월 4일, 6월 6일, 8월 8일, 10월 10일, 12월 12일은'),
+              const Text('모두 금요일입니다! (2025년의 둠스데이)'),
+              const SizedBox(height: 8),
+
+              const Divider(),
+
+              // 3단계 설명
+              const Text(
+                '📝 계산 3단계',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+
+              const Text(
+                '1단계: 연도의 둠스데이 요일 구하기',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+              ),
+              const Text('  • 각 연도마다 기준 요일이 있어요'),
+              const Text('  • 예: 2025년 → 금요일'),
+              const Text('  • 세기와 년도로 계산합니다'),
+              const SizedBox(height: 6),
+
+              const Text(
+                '2단계: 월별 기준 날짜 찾기',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+              ),
+              const Text('  • 각 월마다 정해진 기준일이 있어요'),
+              const Text('  • 쉽게 기억하는 법:'),
+              Container(
+                margin: const EdgeInsets.only(left: 16, top: 4),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.orange[50],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text('짝수 달: 달과 일이 같음'),
+                    Text('  4/4, 6/6, 8/8, 10/10, 12/12'),
+                    Text('홀수 달: 서로 바꾸면 됨'),
+                    Text('  5/9와 9/5, 7/11과 11/7'),
+                    Text('1~2월: 윤년 주의!'),
+                    Text('  1월: 3일(평년)/4일(윤년)'),
+                    Text('  2월: 28일(평년)/29일(윤년)'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 6),
+
+              const Text(
+                '3단계: 날짜 차이로 요일 구하기',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+              const Text('  • 목표 날짜와 기준일의 차이 계산'),
+              const Text('  • 예: 7월 15일 - 7월 11일 = 4일'),
+              const Text('  • 금요일 + 4일 = 화요일!'),
+
+              const SizedBox(height: 8),
+              const Divider(),
+
+              // 팁
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.amber[50],
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: Colors.amber),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      '💪 연습 팁',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text('답변 후 "계산 과정" 버튼을 눌러보세요!'),
+                    Text('각 단계가 어떻게 계산되는지 볼 수 있어요.'),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
