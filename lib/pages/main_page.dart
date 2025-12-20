@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:learn_doomsday/widgets/big_button.dart';
 import 'package:learn_doomsday/pages/quiz_page.dart';
+import 'package:learn_doomsday/pages/today_history_page.dart';
+import 'package:learn_doomsday/pages/learn_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key, required this.title});
@@ -32,8 +34,26 @@ class _MainPageState extends State<MainPage> {
                 );
               },
             ),
-            BigButton(label: '오늘의 역사'),
-            BigButton(label: '다시 배우기'),
+            BigButton(
+              label: '오늘의 역사',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const TodayHistoryPage(),
+                  ),
+                );
+              },
+            ),
+            BigButton(
+              label: '다시 배우기',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const LearnPage(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
